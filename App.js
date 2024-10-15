@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
 import * as Contacts from 'expo-contacts';
-import * as SMS from 'expo-sms';
 import { useState } from 'react';
 
 export default function App() {
@@ -13,17 +12,24 @@ const getContacts = async () => {
       { fields: [Contacts.Fields.PhoneNumbers] }
     );
     if (data.length > 0) {
-      setContact(data[0]);
+      setContact(data); //data[0] näyttää vain ensimmäisen yhteystiedon
     }
   }
 }
-
-
   return (
     <View style={styles.container}>
-    <Text>{contact.name}</Text>
+    <FlatList
+      data={contact}
+      renderItem={({ item }) => (
+        <View>
+          <Text>{item.name}</Text>
+          {item.phoneNumbers && item.phoneNumbers.length > 0 && ( // tarkistetaan onko phoneNumbers-kenttä olemassa ja onko siinä vähintään yksi puhelinnumero.
+          <Text>{item.phoneNumbers[0].number}</Text> // mikäli ehto täyttyy, näytetään ensimmäinen puhelinnumero
+           )}
+        </View>
+      )}
+          />
     <Button title="Get Contact" onPress={getContacts} />
-
   </View>
   );
 }
@@ -33,6 +39,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start', 
   },
 });
